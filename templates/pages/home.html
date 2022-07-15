@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns="http://www.w3.org/1999/html">
+    <head>
+        {% load static %}
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>S-team</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.15.0/css/all.css'>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+{#       <script src="{% static 'assets/annyang.min.js' %}"></script>#}
+        <style>
+            body{
+                background-image: url("{% static 'assets/img/bg.jpg' %}");
+                background-size: cover;
+            }
+            .chat-1{
+                display: inline-block;
+                padding: 10px 20px;
+                background-color: #bbbbbb;
+                border-radius: 15px;
+            }
+            .chat-2{
+                display: inline-block;
+                padding: 10px 20px;
+                background-color: #5650FF;
+                border-radius: 15px;
+                color: #f3f3f3;
+            }
+            .magili{
+                padding-top: 15px;
+                padding-end: 15px;
+            }
+            .input-fo{
+                padding: 10px;
+                background-color: #e7e7e7;
+                border-radius: 24px;
+                margin-top: 10px;
+                margin-bottom: 10px;
+            }
+            .fixed-fo{
+                position: fixed;
+                right: 0;
+                width: 100%;
+                bottom: 0;
+            }
+            .fixed-fi{
+                border-style: solid;
+                border-color: #e8e8e8;
+                border-width: 0px;
+                border-top-width: 2px;
+            }
+            .fixed-fa{
+                position: fixed;
+                left: 0;
+                width: 100%;
+                top: 0;
+            }
+
+            .form-control {
+                border: 0;
+            }
+            .form-control:focus {
+                background-color: #f5f5f5;
+                box-shadow: 0 0 0 0.25rem #5d5d5d;
+            }
+            td {
+                text-align: center;
+                vertical-align: central;
+            }
+            .bubble {
+                position: relative;
+                display: inline-block;
+                margin-bottom: 5px;
+                color: #F9FBFF;
+                font-size: 0.7em;
+                padding: 10px 10px 10px 12px;
+                border-radius: 20px;
+            }
+            .ellipsis {
+              width: 5px;
+              height: 5px;
+              display: inline-block;
+              background: #b7b7b7;
+              border-radius: 50%;
+              animation: bounce 1.3s linear infinite;
+            }
+            .one {
+                animation-delay: 0.6s;
+            }
+
+            .two {
+                animation-delay: 0.5s;
+            }
+
+            .three {
+                animation-delay: 0.8s;
+            }
+            .typing .bubble {
+                background: #eaeaea;
+                padding: 8px 13px 9px 13px;
+            }
+
+            @keyframes bounce {
+                30% {
+                    transform: translateY(-2px);
+                }
+                60% {
+                    transform: translateY(0px);
+                }
+                80% {
+                    transform: translateY(2px);
+                }
+                100% {
+                    transform: translateY(0px);
+                    opacity: 0.5;
+                }
+            }
+        </style>
+    </head>
+    <body>
+    <div class="fixed-fa">
+        <div class="container col-12 col-sm-8 col-md-7 col-lg-6 col-xl-5" style="min-width: 360px;">
+            <div class="row justify-content-end">
+                <div class="col-auto" style="padding-left:10px;">
+                    <button id="volume" class="btn" style="padding: 10px; color: rgba(77,68,255,0.45);">
+                        <i id="volume-up" class="fas fa-volume-up fa-2x"></i>
+                        <i id="volume-mute" class="fas fa-volume-mute fa-2x"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+        <div class="container col-12 col-sm-8 col-md-7 col-lg-6 col-xl-5" style="min-width: 375px;background: #ffffff">
+            <div id="root" style="min-height: 80vh"></div>
+            <div style="padding-bottom: 20vh"></div>
+        </div>
+        </div>
+        <div class="fixed-fo container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-12 col-sm-8 col-md-7 col-lg-6 col-xl-5" style="background-color: #ffffff">
+                    <div class="typing" id="conse">
+                        <div class="bubble">
+                            <div class="ellipsis one"></div>
+                            <div class="ellipsis two"></div>
+                            <div class="ellipsis three"></div>
+                        </div>
+                    </div>
+                    <div class="container-fluid fixed-fi">
+                        <div class="row align-items-center justify-content-end" style=" padding:0">
+                            <div class="col" style="padding:0;">
+                                <div class="collapse multi-collapse" id="collapseExample">
+                                    <div class="row align-items-center">
+                                        <div class="col">
+                                        <input id="mes" class="input-fo form-control" style="height:56px" placeholder="Aa">
+                                        </div>
+                                        <div class="col-auto" style="padding-left:0;">
+                                            <button id="stbutton" class="btn" style="padding: 10px; color: #5650FF;"><i class="fas fa-paper-plane fa-2x"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                    <div class="align-items-center collapse show multi-collapse"id="collapseExample">
+                                        <div class="row align-items-center">
+                                            <div class="col">
+                                                <table style="max-height: 50px;width: 100%">
+                                            <tr>
+                                             <td><div id="axx1" style="background-color: #ABA8FF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx2" style="background-color: #ABA8FF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx3" style="background-color: #9F9CFF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx4" style="background-color: #9F9CFF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx5" style="background-color: #9390FF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx6" style="background-color: #9390FF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx7" style="background-color: #8783FF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx8" style="background-color: #8783FF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx9" style="background-color: #7B77FF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx10" style="background-color: #7B77FF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx11" style="background-color: #6F6AFF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx12" style="background-color: #635EFF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx13" style="background-color: #5650FF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx14" style="background-color: #635EFF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx15" style="background-color: #6F6AFF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx16" style="background-color: #7B77FF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx17" style="background-color: #7B77FF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx18" style="background-color: #8783FF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx19" style="background-color: #8783FF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx20" style="background-color: #9390FF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx21" style="background-color: #9390FF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx22" style="background-color: #9F9CFF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx23" style="background-color: #9F9CFF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx24" style="background-color: #ABA8FF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             <td><div id="axx25" style="background-color: #ABA8FF ;width: 100%;height: 10px;border-radius: 20px;"></div></td>
+                                             </tr>
+                                        </table>
+                                            </div>
+                                            <div class="col-auto" style="padding:0;">
+                                                <button id="mic_on_of" class="btn" style="padding: 10px; color: #5650FF;max-height: 56px; width: 62px" >
+                                                     <i id="mic_of" class=" fas fa-microphone-alt-slash fa-2x"></i>
+                                                     <i id="mic_on" class="fas fa-microphone-alt fa-2x"></i>
+                                        </button>
+                                            </div>
+
+                                        </div>
+
+
+                                    </div>
+                            </div>
+                            <div class="col-auto" style="margin: 10px 0px 10px 0px;padding:0;">
+                                    <button id="micbutton" class="btn" style="padding: 10px; color: #5650FF;max-height: 56px;width: 58px"  data-bs-target=".multi-collapse" data-bs-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+                                        <i id="mic" class="collapse-horizontal fas fa-microphone fa-2x"></i>
+                                        <i id="chat" class="fas fa-keyboard fa-2x"></i>
+                                    </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="https://code.responsivevoice.org/responsivevoice.js?key=zHil0DfG"></script>
+        <script>
+            voidetanet_op=true
+            voidetanet  = responsiveVoice
+            voidetanet.setDefaultVoice("Vietnamese Female");
+            {#responsiveVoice.cancel();#}
+            function voidetanet_t(text){
+                if (voidetanet_op){
+                    voidetanet.cancel();
+                    voidetanet.speak(text)
+                }
+            }
+            $("#volume-mute").hide();
+            $("#volume").click(function(){
+              $("#volume-up").toggle();
+              $("#volume-mute").toggle();
+              if($("#volume-mute").is(":hidden")){
+                  voidetanet_op=true
+              }else{
+                  voidetanet_op=false
+              }
+            });
+
+            sta_time_stop=0
+            check_sta_void=false
+            navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(function(stream) {
+              audioContext = new AudioContext();
+              analyser = audioContext.createAnalyser();
+              microphone = audioContext.createMediaStreamSource(stream);
+              javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
+              analyser.smoothingTimeConstant = 0.8;
+              analyser.fftSize = 1024;
+              microphone.connect(analyser);
+              analyser.connect(javascriptNode);
+              javascriptNode.connect(audioContext.destination);
+              javascriptNode.onaudioprocess = function() {
+                  var array = new Uint8Array(analyser.frequencyBinCount);
+                  analyser.getByteFrequencyData(array);
+                  var values = 0;
+                  var length = array.length;
+                  for (var i = 0; i < length; i++) {
+                      values += (array[i]);
+                  }
+                  var average = values / length;
+                  colorPids(average);
+                  {#console.log(Math.round(average));#}
+              }
+            }).catch(function(err) {
+                /* handle the error */
+            });
+            chat_void= {
+                "axx1" : [7,'#ABA8FF','#ffa8a8'],
+                "axx2" : [6.5,'#ABA8FF','#ffa8a8'],
+                "axx3" : [6,'#9F9CFF','#ff9c9c'],
+                "axx4" : [5.5,'#9F9CFF','#ff9c9c'],
+                "axx5" : [5,'#9390FF','#ff9090'],
+                "axx6" : [4.5,'#9390FF','#ff9090'],
+                "axx7" : [4,'#8783FF','#ff8383'],
+                "axx8" : [3.5,'#8783FF','#ff8383'],
+                "axx9" : [3,'#7B77FF','#ff7777'],
+                "axx10": [2.5,'#7B77FF','#ff7777'],
+                "axx11": [2,'#6F6AFF','#ff6a6a'],
+                "axx12": [1.5,'#635EFF','#ff5e5e'],
+                "axx13": [1,'#5650FF','#ff5050'],
+                "axx14": [1.5,'#635EFF','#ff5e5e'],
+                "axx15": [2,'#6F6AFF','#ff7777'],
+                "axx16": [2.5,'#7B77FF','#ff7777'],
+                "axx17": [3,'#7B77FF','#ff8383'],
+                "axx18": [3.5,'#8783FF','#ff8383'],
+                "axx19": [4,'#8783FF','#ff9090'],
+                "axx20": [4.5,'#9390FF','#ff9090'],
+                "axx21": [5,'#9390FF','#ff9090'],
+                "axx22": [5.5,'#9F9CFF','#ff9c9c'],
+                "axx23": [6,'#9F9CFF','#ff9c9c'],
+                "axx24": [6.5,'#ABA8FF','#ffa8a8'],
+                "axx25": [7,'#ABA8FF','#ffa8a8'],
+            }
+            $("#mic").hide();
+            $("#micbutton").click(function(){
+              $("#mic").toggle();
+              $("#chat").toggle();
+
+              sta_time_stop=0
+              check_sta_void=false
+              mic_on_of(false)
+            });
+            $("#mic_on_of").click(function(){
+                if($("#mic_on").is(":hidden")){
+                    sta_time_stop=300
+                    check_sta_void=true
+                    mic_on_of(true);
+                }else{
+                    sta_time_stop=0
+                    check_sta_void=false
+                    mic_on_of(false);
+                }
+
+            });
+
+            $("#mic_on").hide();
+            function mic_on_of(hin) {
+                if(hin){
+                    $("#mic_of").hide();
+                    $("#mic_on").show();
+                }else{
+                    $("#mic_of").show();
+                    $("#mic_on").hide();
+                }
+
+            }
+            function colorPids(vol) {
+                if (!check_sta_void){
+                    for (index in chat_void){
+                        $("#"+index).css({"height": 5, "background-color": chat_void[index][2] });
+                    }
+                    return;
+                }
+                if (sta_time_stop===0){
+                    if(check_sta_void){
+                        check_sta_void=false
+                        mic_on_of(false)
+                    }
+                }else{
+                    sta_time_stop=sta_time_stop-1
+                }
+                {#console.log(sta_time_stop)#}
+                vol=vol*2;
+                for (index in chat_void){
+                    let vol_t=5+vol/chat_void[index][0];
+                    if (vol_t>50){
+                        vol_t=50
+                    };
+                    $("#"+index).css({"height": vol_t+"px", "background-color": chat_void[index][1] });
+                }
+
+            }
+            $(function () {
+                $("#conse").show();
+                setTimeout(function(){
+                    $("#root").append(chat_1('xin chào, nếu bạn cần trợ giúp.<br> hãy nói \"alo\" để gọi tôi'))
+                    voidetanet_t("xin chào, nếu bạn cần trợ giúp.   hãy nói alo để gọi tôi")
+                    $("#conse").hide();
+                }, 2000);
+            })
+            $('#mes').keydown(function(e){
+                if(e.key==='Enter') {
+                    question();
+                }
+            });
+            $("#stbutton").click(function(){
+                question();
+            });
+            hit={}
+             function question(){
+                 var question_s = $("#mes").val()
+                 question_s = question_s.trim()
+                 if(question_s===""){
+                     return;
+                 }
+                 $("#root").append(chat_2(question_s))
+                 $("#conse").show();
+                 item = {
+                     question: question_s,
+                     hit: hit
+                 };
+                 $("#mes").val("")
+                 setTimeout(function(){
+                     $.post({
+                        url: "/question/",
+                        contentType: "application/json",
+                        data: JSON.stringify(item),
+                        dataType: "json",
+                        success: function (data) {
+                            console.log(data);
+                            hit = data['hit']
+                            $("#root").append(chat_1(data['reply']))
+                            voidetanet_t(data['reply'].replace(/<(?:.|\n)*?>/gm, ''));
+                            window.scrollTo(0,document.body.scrollHeight);
+                            $("#conse").hide();
+                        },
+                         error: function (data) {
+                             console.log(data)
+                            $("#conse").hide();
+                        },
+                     });
+                     }, 500);
+                 }
+
+            function chat_1(val){
+                let item =
+                    '<div class="row justify-content-start magili">'+
+                        '<div class="col-8">'+
+                            '<div class="chat-1">'+
+                            val +
+                            '</div>'+
+                        '</div>'+
+                    '</div>'
+                return item;
+            }
+            function chat_2(val){
+                let item =
+                    '<div class="row justify-content-end magili">'+
+                        '<div class="col-8 text-end">'+
+                            '<div class="chat-2 ">'+
+                            val +
+                            '</div>'+
+                        '</div>'+
+                    '</div>'
+                return item;
+            }
+        </script>
+<script>
+    $(function () {
+        if (annyang) {
+            var hello = function() {
+                if ($("#chat").is(":hidden")){
+                    return
+                }
+                $("#root").append(chat_2('Hello'))
+                $("#conse").show();
+                setTimeout(function(){
+                    $("#root").append(chat_1('Chào bạn, tôi có thể giúp gì cho bạn'))
+                    responsiveVoice.speak("Chào bạn, tôi có thể giúp gì cho bạn");
+                    $("#conse").hide();
+                }, 1000);
+
+            };
+            var full_void = function(text) {
+                if ($("#chat").is(":hidden")){
+                    return
+                }
+                if(check_sta_void){
+                    $("#mes").val(text);
+                    sta_time_stop=300;
+                    question();
+                    {#check_sta_void=false#}
+                }
+            };
+            var sta_void = function(text) {
+                if ($("#chat").is(":hidden")){
+                    return
+                }
+                $("#root").append(chat_1('Chào bạn, tôi có thể giúp gì cho bạn'))
+                voidetanet_t("Chào bạn, tôi có thể giúp gì cho bạn");
+                sta_time_stop=300
+                check_sta_void=true
+                mic_on_of(true)
+            };
+
+            const commands = {
+                'Hello(.) (there)': hello,
+                'alo': sta_void,
+                '*search':   full_void,
+            };
+            // activate debug mode for detailed logging in the console
+            annyang.debug();
+
+            // Add our commands to annyang
+            annyang.addCommands(commands);
+
+            // Set a language for speech recognition (defaults to English)
+            annyang.setLanguage('vi');
+
+            annyang.addCallback ('soundstart',  function(){
+                console.log('âm thanh được phát hiện') ;
+            } ) ;
+
+            annyang.addCallback( 'result', function(){
+                console.log('ngừng nói') ;
+            } ) ;
+
+            // Start listening.
+            annyang.start({ autoRestart: true, continuous: false });
+        }
+    });
+</script>
+    </body>
+</html>

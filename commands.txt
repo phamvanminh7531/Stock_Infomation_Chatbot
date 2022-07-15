@@ -1,0 +1,18 @@
+# tạo môi trường ảo
+
+virtualenv env
+
+# kích hoạt môi trường ảo
+
+env\Scripts\activate
+
+# cài thư viện cho môi trường ảo
+
+pip install -r requirements.txt
+
+# khởi động
+
+python manage.py runserver
+
+
+
